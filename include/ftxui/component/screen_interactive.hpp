@@ -69,8 +69,12 @@ class ScreenInteractive : public Screen {
   // cases, the application may want to handle these events itself. In this
   // case, the application can force FTXUI to not handle these events by calling
   // the following functions with force=true.
-  void ForceHandleCtrlC(bool force);
-  void ForceHandleCtrlZ(bool force);
+  ScreenInteractive& ForceHandleCtrlC(bool force);
+  ScreenInteractive& ForceHandleCtrlZ(bool force);
+
+  using CrashHandler = std::function<void(const int)>;
+
+  ScreenInteractive& OnCrash(CrashHandler handler);
 
   // Selection API.
   std::string GetSelection();
@@ -155,6 +159,7 @@ class ScreenInteractive : public Screen {
   SelectionData selection_data_previous_;
   std::unique_ptr<Selection> selection_;
   std::function<void()> selection_on_change_;
+  CrashHandler crash_handler_;
 
   friend class Loop;
 
@@ -169,3 +174,5 @@ class ScreenInteractive : public Screen {
 }  // namespace ftxui
 
 #endif /* end of include guard: FTXUI_COMPONENT_SCREEN_INTERACTIVE_HPP */
+
+// // vim: set expandtab tabstop=2 shiftwidth=2 softtabstop=2 :

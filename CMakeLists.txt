@@ -34,6 +34,7 @@ else()
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_FLAGS "-ggdb3 -O2")
 
 include(cmake/ftxui_message.cmake)
 

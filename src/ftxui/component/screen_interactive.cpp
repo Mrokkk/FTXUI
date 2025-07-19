@@ -211,11 +211,15 @@ std::atomic<int> g_signal_resize_count = 0;  // NOLINT
 // Async signal safe function
 void RecordSignal(int signal) {
   switch (signal) {
+    case SIGBUS:
     case SIGABRT:
     case SIGFPE:
     case SIGILL:
-    case SIGINT:
     case SIGSEGV:
+      ScreenInteractive::Private::Signal(*g_active_screen, signal);
+      break;
+
+    case SIGINT:
     case SIGTERM:
       g_signal_exit_count++;
       break;
@@ -238,7 +242,7 @@ void RecordSignal(int signal) {
 void ExecuteSignalHandlers() {
   int signal_exit_count = g_signal_exit_count.exchange(0);
   while (signal_exit_count--) {
-    ScreenInteractive::Private::Signal(*g_active_screen, SIGABRT);
+    ScreenInteractive::Private::Signal(*g_active_screen, SIGTERM);
   }
 
 #if !defined(_WIN32)
@@ -569,14 +573,22 @@ Closure ScreenInteractive::WithRestoredIO(Closure fn) {  // NOLINT
 
 /// @brief Force FTXUI to handle or not handle Ctrl-C, even if the component
 /// catches the Event::CtrlC.
-void ScreenInteractive::ForceHandleCtrlC(bool force) {
+ScreenInteractive& ScreenInteractive::ForceHandleCtrlC(bool force) {
   force_handle_ctrl_c_ = force;
+  return *this;
 }
 
 /// @brief Force FTXUI to handle or not handle Ctrl-Z, even if the component
 /// catches the Event::CtrlZ.
-void ScreenInteractive::ForceHandleCtrlZ(bool force) {
+ScreenInteractive& ScreenInteractive::ForceHandleCtrlZ(bool force) {
   force_handle_ctrl_z_ = force;
+  return *this;
+}
+
+ScreenInteractive& ScreenInteractive::OnCrash(CrashHandler handler)
+{
+  crash_handler_ = std::move(handler);
+  return *this;
 }
 
 /// @brief Returns the content of the current selection
@@ -624,7 +636,7 @@ void ScreenInteractive::Install() {
 
   // Install signal handlers to restore the terminal state on exit. The default
   // signal handlers are restored on exit.
-  for (const int signal : {SIGTERM, SIGSEGV, SIGINT, SIGILL, SIGABRT, SIGFPE}) {
+  for (const int signal : {SIGTERM, SIGSEGV, SIGINT, SIGILL, SIGABRT, SIGFPE, SIGBUS}) {
     InstallSignalHandler(signal);
   }
 
@@ -1042,32 +1054,46 @@ void ScreenInteractive::ExitNow() {
 
 // private:
 void ScreenInteractive::Signal(int signal) {
-  if (signal == SIGABRT) {
-    Exit();
-    return;
-  }
+  switch (signal) {
+    case SIGBUS:
+    case SIGABRT:
+    case SIGFPE:
+    case SIGILL:
+    case SIGSEGV:
+      Uninstall();
+      if (crash_handler_)
+      {
+        crash_handler_(signal);
+      }
+      break;
+
+    case SIGTERM:
+      Exit();
+      break;
 
 // Windows do no support SIGTSTP / SIGWINCH
 #if !defined(_WIN32)
-  if (signal == SIGTSTP) {
-    Post([&] {
-      ResetCursorPosition();
-      std::cout << ResetPosition(/*clear*/ true);  // Cursor to the beginning
-      Uninstall();
-      dimx_ = 0;
-      dimy_ = 0;
-      Flush();
-      std::ignore = std::raise(SIGTSTP);
-      Install();
-    });
-    return;
-  }
+    case SIGTSTP:
+      Post([&] {
+        ResetCursorPosition();
+        std::cout << ResetPosition(/*clear*/ true);  // Cursor to the beginning
+        Uninstall();
+        dimx_ = 0;
+        dimy_ = 0;
+        Flush();
+        std::ignore = std::raise(SIGTSTP);
+        Install();
+      });
+      break;
 
-  if (signal == SIGWINCH) {
-    Post(Event::Special({0}));
-    return;
-  }
+    case SIGWINCH:
+      Post(Event::Special({0}));
+      break;
 #endif
+
+    default:
+      break;
+  }
 }
 
 bool ScreenInteractive::SelectionData::operator==(
@@ -1088,3 +1114,5 @@ bool ScreenInteractive::SelectionData::operator!=(
 }
 
 }  // namespace ftxui.
+
+// // vim: set expandtab tabstop=2 shiftwidth=2 softtabstop=2 :
