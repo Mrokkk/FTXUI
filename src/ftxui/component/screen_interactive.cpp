@@ -455,20 +455,20 @@ void ScreenInteractive::TrackMouse(bool enable) {
 
 /// @brief Add a task to the main loop.
 /// It will be executed later, after every other scheduled tasks.
-void ScreenInteractive::Post(Task task) {
+ScreenInteractive& ScreenInteractive::Post(Task task) {
   // Task/Events sent toward inactive screen or screen waiting to become
   // inactive are dropped.
-  if (!task_sender_) {
-    return;
+  if (task_sender_) {
+    task_sender_->Send(std::move(task));
   }
-
-  task_sender_->Send(std::move(task));
+  return *this;
 }
 
 /// @brief Add an event to the main loop.
 /// It will be executed later, after every other scheduled events.
-void ScreenInteractive::PostEvent(Event event) {
+ScreenInteractive& ScreenInteractive::PostEvent(Event event) {
   Post(event);
+  return *this;
 }
 
 /// @brief Add a task to draw the screen one more time, until all the animations
@@ -1087,7 +1087,7 @@ void ScreenInteractive::Signal(int signal) {
       break;
 
     case SIGWINCH:
-      Post(Event::Special({0}));
+      Post(Event::Resize);
       break;
 #endif
 

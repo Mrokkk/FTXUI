@@ -217,6 +217,7 @@ std::string Event::DebugString() const {
 
       // --- Custom ---
       {Event::Custom, "Event::Custom"},
+      {Event::Resize, "Event::Resize"},
   };
 
   static std::map<Mouse::Button, const char*> mouse_button_string = {
@@ -320,6 +321,7 @@ const Event Event::End      = Event::Special({27, 91, 70});
 const Event Event::PageUp   = Event::Special({27, 91, 53, 126});
 const Event Event::PageDown = Event::Special({27, 91, 54, 126});
 const Event Event::Custom   = Event::Special({0});
+const Event Event::Resize   = Event::Special({(char)255});
 
 const Event Event::a = Event::Character("a");
 const Event Event::b = Event::Character("b");

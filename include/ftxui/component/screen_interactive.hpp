@@ -52,8 +52,8 @@ class ScreenInteractive : public Screen {
   Closure ExitLoopClosure();
 
   // Post tasks to be executed by the loop.
-  void Post(Task task);
-  void PostEvent(Event event);
+  ScreenInteractive& Post(Task task);
+  ScreenInteractive& PostEvent(Event event);
   void RequestAnimationFrame();
 
   CapturedMouse CaptureMouse();

@@ -95,6 +95,7 @@ struct Event {
 
   // --- Custom ---
   static const Event Custom;
+  static const Event Resize;
 
   //--- Method section ---------------------------------------------------------
   bool operator==(const Event& other) const { return input_ == other.input_; }

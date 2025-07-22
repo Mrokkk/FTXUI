@@ -52,6 +52,7 @@ Decorator operator|(Decorator, Decorator);
 
 // --- Widget ---
 Element text(std::string text);
+Element text(const std::string* text);
 Element vtext(std::string text);
 Element separator();
 Element separatorLight();

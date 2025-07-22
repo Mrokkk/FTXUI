@@ -3,7 +3,6 @@
 // the LICENSE file.
 #include <algorithm>  // for min
 #include <memory>     // for make_shared
-#include <sstream>
 #include <string>   // for string, wstring
 #include <utility>  // for move
 
@@ -23,10 +22,11 @@ using ftxui::Screen;
 
 class Text : public Node {
  public:
-  explicit Text(std::string text) : text_(std::move(text)) {}
+  explicit Text(std::string text) : textOwn_(std::move(text)), textPtr_(&textOwn_) {}
+  explicit Text(const std::string* text) : textPtr_(text) {}
 
   void ComputeRequirement() override {
-    requirement_.min_x = string_width(text_);
+    requirement_.min_x = string_width(*textPtr_);
     requirement_.min_y = 1;
     has_selection = false;
   }
@@ -44,9 +44,12 @@ class Text : public Node {
 
     std::stringstream ss;
     int x = box_.x_min;
-    for (const auto& cell : Utf8ToGlyphs(text_)) {
-      if (cell == "\n") {
+    for (const auto& cell : Utf8ToGlyphs(*textPtr_)) {
+      if (cell[0] == '\n') {
         continue;
+      }
+      if (GlyphIsColorSet(cell) || GlyphIsColorReset(cell)) {
+          continue;
       }
       if (selection_start_ <= x && x <= selection_end_) {
         ss << cell;
@@ -64,14 +67,37 @@ class Text : public Node {
       return;
     }
 
-    for (const auto& cell : Utf8ToGlyphs(text_)) {
+    const Color* color = nullptr;
+
+    for (const auto& cell : Utf8ToGlyphs(*textPtr_)) {
       if (x > box_.x_max) {
         break;
       }
-      if (cell == "\n") {
+      if (cell[0] == '\n') {
         continue;
       }
-      screen.PixelAt(x, y).character = cell;
+
+      if (GlyphIsColorSet(cell)) {
+        color = GlyphToColor(cell);
+        continue;
+      }
+      else if (GlyphIsColorReset(cell)) {
+        color = nullptr;
+        continue;
+      }
+
+      PutGlyph(screen, x++, y, cell, color);
+    }
+  }
+
+ private:
+  void PutGlyph(Screen& screen, int x, int y, const std::string& cell, const Color* color) const {
+      auto& pixel = screen.PixelAt(x, y);
+      pixel.character = cell;
+      if (color)
+      {
+        pixel.foreground_color = *color;
+      }
 
       if (has_selection) {
         auto selectionTransform = screen.GetSelectionStyle();
@@ -79,13 +105,10 @@ class Text : public Node {
           selectionTransform(screen.PixelAt(x, y));
         }
       }
-
-      ++x;
-    }
   }
 
- private:
-  std::string text_;
+  const std::string textOwn_;
+  const std::string* textPtr_;
   bool has_selection = false;
   int selection_start_ = 0;
   int selection_end_ = -1;
@@ -140,6 +163,10 @@ class VText : public Node {
 /// ```
 Element text(std::string text) {
   return std::make_shared<Text>(std::move(text));
+}
+
+Element text(const std::string* text) {
+  return std::make_shared<Text>(text);
 }
 
 /// @brief Display a piece of unicode text.
@@ -222,3 +249,5 @@ Element vtext(std::wstring text) {  // NOLINT
 }
 
 }  // namespace ftxui
+
+// vim: set expandtab tabstop=2 shiftwidth=2 softtabstop=2 :

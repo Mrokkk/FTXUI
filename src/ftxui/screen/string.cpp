@@ -18,6 +18,7 @@
 #include <tuple>    // for _Swallow_assign, ignore
 #include <vector>
 
+#include "ftxui/screen/color.hpp"            // for Color
 #include "ftxui/screen/deprecated.hpp"       // for wchar_width, wstring_width
 #include "ftxui/screen/string_internal.hpp"  // for WordBreakProperty, EatCodePoint, CodepointToWordBreakProperty, GlyphCount, GlyphIterate, GlyphNext, GlyphPrevious, IsCombining, IsControl, IsFullWidth, Utf8ToWordBreakProperty
 
@@ -1163,6 +1164,10 @@ int codepoint_width(uint32_t ucs) {
   return 1;
 }
 
+enum : uint8_t {
+  SpecialMarker = 0xff
+};
+
 }  // namespace
 
 namespace ftxui {
@@ -1184,6 +1189,20 @@ bool EatCodePoint(const std::string& input,
   // 1 byte string.
   if ((C0 & 0b1000'0000) == 0b0000'0000) {  // NOLINT
     *ucs = C0 & 0b0111'1111;                // NOLINT
+    *end = start + 1;
+    return true;
+  }
+
+  // Color
+  if (C0 == SpecialMarkers::ColorSet) {
+    *ucs = SpecialMarker;
+    *end = start + sizeof(Color) + 1;
+    return true;
+  }
+
+  // Default color
+  if (C0 == SpecialMarkers::ColorReset) {
+    *ucs = SpecialMarker;
     *end = start + 1;
     return true;
   }
@@ -1259,6 +1278,18 @@ bool EatCodePoint(const std::wstring& input,
 
   // On windows, wstring uses the UTF16 encoding:
   int32_t C0 = input[start];  // NOLINT
+
+  if (C0 == SpecialMarkers::ColorSet) {
+    *ucs = SpecialMarker;
+    *end = start + sizeof(Color) + 1;
+    return true;
+  }
+
+  if (C0 == SpecialMarkers::ColorReset) {
+    *ucs = SpecialMarker;
+    *end = start + 1;
+    return true;
+  }
 
   // 1 word size:
   if (C0 < 0xd800 || C0 >= 0xdc00) {  // NOLINT
@@ -1336,6 +1367,10 @@ int string_width(const std::string& input) {
       continue;
     }
 
+    if (codepoint == SpecialMarker) {
+      continue;
+    }
+
     if (IsControl(codepoint)) {
       continue;
     }
@@ -1368,6 +1403,12 @@ std::vector<std::string> Utf8ToGlyphs(const std::string& input) {
 
     const std::string append = input.substr(start, end - start);
     start = end;
+
+    // Color
+    if (codepoint == SpecialMarker) {
+      out.emplace_back(append);
+      continue;
+    }
 
     // Ignore control characters.
     if (IsControl(codepoint)) {
@@ -1666,4 +1707,10 @@ std::wstring to_wstring(const std::string& s) {
   return out;
 }
 
+const Color* GlyphToColor(const std::string& glyph) {
+  return reinterpret_cast<const Color*>(glyph.c_str() + 1);
+}
+
 }  // namespace ftxui
+
+// vim: set expandtab tabstop=2 shiftwidth=2 softtabstop=2 :
