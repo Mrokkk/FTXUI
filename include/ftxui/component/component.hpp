@@ -37,6 +37,7 @@ Component& operator|=(Component& component, ElementDecorator decorator);
 
 namespace Container {
 Component Vertical(Components children);
+Component LockedVertical(Components children);
 Component Vertical(Components children, int* selector);
 Component Horizontal(Components children);
 Component Horizontal(Components children, int* selector);

@@ -4,11 +4,8 @@
 #ifndef FTXUI_SCREEN_STRING_HPP
 #define FTXUI_SCREEN_STRING_HPP
 
-#include <stdint.h> // for uint8_t
-#include <ostream>  // for ostream
 #include <string>   // for string, wstring, to_string
 #include <vector>   // for vector
-#include "color.hpp"
 
 namespace ftxui {
 
@@ -20,42 +17,6 @@ std::wstring to_wstring(const std::string& s);
 template <typename T>
 std::wstring to_wstring(T s) {
   return to_wstring(std::to_string(s));
-}
-
-enum SpecialMarkers : uint8_t {
-  ColorSet = 0xff,
-  ColorReset = 0xfe,
-};
-
-static inline bool GlyphIsColorSet(const std::string& glyph) {
-  return static_cast<uint8_t>(glyph[0]) == SpecialMarkers::ColorSet;
-}
-
-static inline bool GlyphIsColorReset(const std::string& glyph) {
-  return static_cast<uint8_t>(glyph[0]) == SpecialMarkers::ColorReset;
-}
-
-template <typename T>
-struct ColorWrappedImpl {
-  const T& value;
-  Color color;
-};
-
-template <typename T>
-ColorWrappedImpl<T> ColorWrapped(const T& value, const Color& color) {
-  return ColorWrappedImpl<T>{.value = value, .color = color};
-}
-
-const Color* GlyphToColor(const std::string& glyph);
-
-template <typename T>
-std::ostream& operator<<(std::ostream& os, const ColorWrappedImpl<T>& wrapped)
-{
-  os.write("\xff", 1);
-  os.write(reinterpret_cast<const char*>(&wrapped.color), sizeof(wrapped.color));
-  os << wrapped.value;
-  os.write("\xfe", 1);
-  return os;
 }
 
 int string_width(const std::string&);

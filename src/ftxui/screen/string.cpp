@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "ftxui/screen/color.hpp"            // for Color
+#include "ftxui/screen/colored_string.hpp"
 #include "ftxui/screen/deprecated.hpp"       // for wchar_width, wstring_width
 #include "ftxui/screen/string_internal.hpp"  // for WordBreakProperty, EatCodePoint, CodepointToWordBreakProperty, GlyphCount, GlyphIterate, GlyphNext, GlyphPrevious, IsCombining, IsControl, IsFullWidth, Utf8ToWordBreakProperty
 

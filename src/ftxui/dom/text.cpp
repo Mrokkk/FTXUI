@@ -12,6 +12,7 @@
 #include "ftxui/dom/requirement.hpp"  // for Requirement
 #include "ftxui/dom/selection.hpp"    // for Selection
 #include "ftxui/screen/box.hpp"       // for Box
+#include "ftxui/screen/colored_string.hpp"
 #include "ftxui/screen/screen.hpp"    // for Pixel, Screen
 #include "ftxui/screen/string.hpp"  // for string_width, Utf8ToGlyphs, to_string
 

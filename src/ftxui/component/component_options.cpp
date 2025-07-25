@@ -292,18 +292,7 @@ RadioboxOption RadioboxOption::Simple() {
 InputOption InputOption::Default() {
   InputOption option;
   option.transform = [](InputState state) {
-    state.element |= color(Color::White);
-
-    if (state.is_placeholder) {
-      state.element |= dim;
-    }
-
-    if (state.focused) {
-      state.element |= inverted;
-    } else if (state.hovered) {
-      state.element |= bgcolor(Color::GrayDark);
-    }
-
+    state.element |= color(Color());
     return state.element;
   };
   return option;

@@ -105,7 +105,7 @@ class VerticalContainer : public ContainerBase {
       elements.push_back(it->Render());
     }
     if (elements.empty()) {
-      return text("Empty container") | reflect(box_);
+      return text("") | reflect(box_);
     }
     return vbox(std::move(elements)) | reflect(box_);
   }
@@ -178,6 +178,14 @@ class VerticalContainer : public ContainerBase {
   Box box_;
 };
 
+class LockedVerticalContainer : public VerticalContainer {
+  using VerticalContainer::VerticalContainer;
+  bool EventHandler(Event /*event*/) override
+  {
+    return false;
+  }
+};
+
 class HorizontalContainer : public ContainerBase {
  public:
   using ContainerBase::ContainerBase;
@@ -189,7 +197,7 @@ class HorizontalContainer : public ContainerBase {
       elements.push_back(it->Render());
     }
     if (elements.empty()) {
-      return text("Empty container");
+      return text("");
     }
     return hbox(std::move(elements));
   }
@@ -223,7 +231,7 @@ class TabContainer : public ContainerBase {
     if (active_child) {
       return active_child->Render();
     }
-    return text("Empty container");
+    return text("");
   }
 
   bool Focusable() const override {
@@ -340,6 +348,12 @@ Component Vertical(Components children, int* selector) {
   return std::make_shared<VerticalContainer>(std::move(children), selector);
 }
 
+/// Version of vertical container which does not handle events and has
+/// no ability to jump between children
+Component LockedVertical(Components children) {
+  return std::make_shared<LockedVerticalContainer>(std::move(children), nullptr);
+}
+
 /// @brief A list of components, drawn one by one horizontally and navigated
 /// horizontally using left/right arrow key or 'h'/'l' keys.
 /// @param children the list of components.
@@ -436,3 +450,5 @@ Component Stacked(Components children) {
 }  // namespace Container
 
 }  // namespace ftxui
+
+// vim: set expandtab tabstop=2 shiftwidth=2 softtabstop=2 :

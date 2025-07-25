@@ -97,21 +97,16 @@ class InputBase : public ComponentBase, public InputOption {
  private:
   // Component implementation:
   Element OnRender() override {
-    const bool is_focused = Focused();
-    const auto focused = (!is_focused && !hovered_) ? nothing
-                         : insert()                 ? focusCursorBarBlinking
-                                                    : focusCursorBlockBlinking;
-
     auto transform_func =
         transform ? transform : InputOption::Default().transform;
 
     // placeholder.
     if (content->empty()) {
-      auto element = text(placeholder()) | xflex | frame;
+      cursor_position() = 0;
+      auto element = hbox(text(" ") | inverted, text("")) | xflex  | frame;
 
       return transform_func({
-                 std::move(element), hovered_, is_focused,
-                 true  // placeholder
+                 std::move(element), false, false, false
              }) |
              focus | reflect(box_);
     }
@@ -134,7 +129,7 @@ class InputBase : public ComponentBase, public InputOption {
     }
 
     if (lines.empty()) {
-      elements.push_back(text("") | focused);
+      elements.push_back(text("") | inverted);
     }
 
     elements.reserve(lines.size());
@@ -151,7 +146,7 @@ class InputBase : public ComponentBase, public InputOption {
       if (cursor_char_index >= (int)line.size()) {
         elements.push_back(hbox({
                                Text(line),
-                               text(" ") | focused | reflect(cursor_box_),
+                               text(" ") | inverted | reflect(cursor_box_),
                            }) |
                            xflex);
         continue;
@@ -166,7 +161,7 @@ class InputBase : public ComponentBase, public InputOption {
       const std::string part_after_cursor = line.substr(glyph_end);
       auto element = hbox({
                          Text(part_before_cursor),
-                         Text(part_at_cursor) | focused | reflect(cursor_box_),
+                         Text(part_at_cursor) | inverted | reflect(cursor_box_),
                          Text(part_after_cursor),
                      }) |
                      xflex;
@@ -175,7 +170,7 @@ class InputBase : public ComponentBase, public InputOption {
 
     auto element = vbox(std::move(elements), cursor_line) | frame;
     return transform_func({
-               std::move(element), hovered_, is_focused,
+               std::move(element), false, false,
                false  // placeholder
            }) |
            xflex | reflect(box_);
@@ -187,7 +182,7 @@ class InputBase : public ComponentBase, public InputOption {
     }
 
     std::string out;
-    out.reserve(10 + input.size() * 3 / 2);
+    out.reserve(10 + ((input.size() * 3) / 2 + 10));
     for (size_t i = 0; i < input.size(); ++i) {
       out += "•";
     }
@@ -275,7 +270,7 @@ class InputBase : public ComponentBase, public InputOption {
   }
 
   bool HandleArrowUp() {
-    if (cursor_position() == 0) {
+    if (cursor_position() == 0 or not multiline()) {
       return false;
     }
 
@@ -310,7 +305,7 @@ class InputBase : public ComponentBase, public InputOption {
   }
 
   bool HandleArrowDown() {
-    if (cursor_position() == (int)content->size()) {
+    if (cursor_position() == (int)content->size() or not multiline()) {
       return false;
     }
 
