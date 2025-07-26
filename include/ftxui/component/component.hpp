@@ -110,8 +110,8 @@ Component Renderer(std::function<Element()>);
 Component Renderer(std::function<Element(bool /* focused */)>);
 ComponentDecorator Renderer(ElementDecorator);
 
-Component CatchEvent(Component child, std::function<bool(Event)>);
-ComponentDecorator CatchEvent(std::function<bool(Event)> on_event);
+Component CatchEvent(Component child, std::function<bool(const Event&)>);
+ComponentDecorator CatchEvent(std::function<bool(const Event&)> on_event);
 
 Component Maybe(Component, const bool* show);
 Component Maybe(Component, std::function<bool()>);

@@ -25,7 +25,7 @@ class ContainerBase : public ComponentBase {
   }
 
   // Component override.
-  bool OnEvent(Event event) override {
+  bool OnEvent(const Event& event) override {
     if (event.is_mouse()) {
       return OnMouseEvent(event);
     }
@@ -62,8 +62,8 @@ class ContainerBase : public ComponentBase {
   // Handlers
   virtual bool EventHandler(Event /*unused*/) { return false; }  // NOLINT
 
-  virtual bool OnMouseEvent(Event event) {
-    return ComponentBase::OnEvent(std::move(event));
+  virtual bool OnMouseEvent(const Event& event) {
+    return ComponentBase::OnEvent(event);
   }
 
   int selected_ = 0;
@@ -149,7 +149,7 @@ class VerticalContainer : public ContainerBase {
     return old_selected != *selector_;
   }
 
-  bool OnMouseEvent(Event event) override {
+  bool OnMouseEvent(const Event& event) override {
     if (ContainerBase::OnMouseEvent(event)) {
       return true;
     }
@@ -241,7 +241,7 @@ class TabContainer : public ContainerBase {
     return children_[size_t(*selector_) % children_.size()]->Focusable();
   }
 
-  bool OnMouseEvent(Event event) override {
+  bool OnMouseEvent(const Event& event) override {
     return ActiveChild() && ActiveChild()->OnEvent(event);
   }
 };
@@ -294,7 +294,7 @@ class StackedContainer : public ContainerBase {
     std::rotate(children_.begin(), it, it + 1);
   }
 
-  bool OnEvent(Event event) final {
+  bool OnEvent(const Event& event) final {
     for (auto& child : children_) {
       if (child->OnEvent(event)) {
         return true;

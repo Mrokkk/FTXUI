@@ -57,7 +57,7 @@ Component Dropdown(DropdownOption option) {
     }
 
     // Switch focus in between the checkbox and the radiobox when selecting it.
-    bool OnEvent(ftxui::Event event) override {
+    bool OnEvent(const Event& event) override {
       const bool open_old = open_();
       const int selected_old = selected_();
       bool handled = ComponentBase::OnEvent(event);

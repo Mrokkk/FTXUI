@@ -152,7 +152,7 @@ class WindowImpl : public ComponentBase, public WindowOptions {
     return element;
   }
 
-  bool OnEvent(Event event) final {
+  bool OnEvent(const Event& event) final {
     if (ComponentBase::OnEvent(event)) {
       return true;
     }

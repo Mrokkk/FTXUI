@@ -36,7 +36,7 @@ class CheckboxBase : public ComponentBase, public CheckboxOption {
     return element;
   }
 
-  bool OnEvent(Event event) override {
+  bool OnEvent(const Event& event) override {
     if (!CaptureMouse(event)) {
       return false;
     }
@@ -55,7 +55,7 @@ class CheckboxBase : public ComponentBase, public CheckboxOption {
     return false;
   }
 
-  bool OnMouseEvent(Event event) {
+  bool OnMouseEvent(const Event& event) {
     hovered_ = box_.Contain(event.mouse().x, event.mouse().y);
 
     if (!CaptureMouse(event)) {

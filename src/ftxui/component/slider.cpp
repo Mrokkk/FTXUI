@@ -103,7 +103,7 @@ class SliderBase : public SliderOption<T>, public ComponentBase {
     }
   }
 
-  bool OnEvent(Event event) final {
+  bool OnEvent(const Event& event) final {
     if (event.is_mouse()) {
       return OnMouseEvent(event);
     }
@@ -218,7 +218,7 @@ class SliderWithLabel : public ComponentBase {
   }
 
  private:
-  bool OnEvent(Event event) final {
+  bool OnEvent(const Event& event) final {
     if (ComponentBase::OnEvent(event)) {
       return true;
     }

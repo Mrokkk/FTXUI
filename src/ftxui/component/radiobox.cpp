@@ -50,7 +50,7 @@ class RadioboxBase : public ComponentBase, public RadioboxOption {
   }
 
   // NOLINTNEXTLINE(readability-function-cognitive-complexity)
-  bool OnEvent(Event event) override {
+  bool OnEvent(const Event& event) override {
     Clamp();
     if (!CaptureMouse(event)) {
       return false;
@@ -105,7 +105,7 @@ class RadioboxBase : public ComponentBase, public RadioboxOption {
     return false;
   }
 
-  bool OnMouseEvent(Event event) {
+  bool OnMouseEvent(const Event& event) {
     if (event.mouse().button == Mouse::WheelDown ||
         event.mouse().button == Mouse::WheelUp) {
       return OnMouseWheel(event);
@@ -131,7 +131,7 @@ class RadioboxBase : public ComponentBase, public RadioboxOption {
     return false;
   }
 
-  bool OnMouseWheel(Event event) {
+  bool OnMouseWheel(const Event& event) {
     if (!box_.Contain(event.mouse().x, event.mouse().y)) {
       return false;
     }

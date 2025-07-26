@@ -148,7 +148,7 @@ Element ComponentBase::OnRender() {
 /// @return True when the event has been handled.
 /// The default implementation called OnEvent on every child until one return
 /// true. If none returns true, return false.
-bool ComponentBase::OnEvent(Event event) {  // NOLINT
+bool ComponentBase::OnEvent(const Event& event) {  // NOLINT
   for (Component& child : children_) {      // NOLINT
     if (child->OnEvent(event)) {
       return true;

@@ -53,7 +53,7 @@ Component Hoverable(Component component, bool* hover) {
       return ComponentBase::OnRender() | reflect(box_);
     }
 
-    bool OnEvent(Event event) override {
+    bool OnEvent(const Event& event) override {
       if (event.is_mouse()) {
         *hover_ = box_.Contain(event.mouse().x, event.mouse().y) &&
                   CaptureMouse(event);
@@ -102,7 +102,7 @@ Component Hoverable(Component component,
       return ComponentBase::OnRender() | reflect(box_);
     }
 
-    bool OnEvent(Event event) override {
+    bool OnEvent(const Event& event) override {
       if (event.is_mouse()) {
         const bool hover = box_.Contain(event.mouse().x, event.mouse().y) &&
                            CaptureMouse(event);

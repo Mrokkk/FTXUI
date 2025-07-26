@@ -59,7 +59,7 @@ class ComponentBase {
   // By default, reduce on children with a lazy OR.
   //
   // Returns whether the event was handled or not.
-  virtual bool OnEvent(Event);
+  virtual bool OnEvent(const Event&);
 
   // Handle an animation step.
   virtual void OnAnimation(animation::Params& params);

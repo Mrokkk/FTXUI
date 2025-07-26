@@ -30,7 +30,7 @@ Component Maybe(Component child, std::function<bool()> show) {
     bool Focusable() const override {
       return show_() && ComponentBase::Focusable();
     }
-    bool OnEvent(Event event) override {
+    bool OnEvent(const Event& event) override {
       return show_() && ComponentBase::OnEvent(event);
     }
 

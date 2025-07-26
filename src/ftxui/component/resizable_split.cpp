@@ -50,14 +50,14 @@ class ResizableSplitBase : public ComponentBase {
     }
   }
 
-  bool OnEvent(Event event) final {
+  bool OnEvent(const Event& event) final {
     if (event.is_mouse()) {
-      return OnMouseEvent(std::move(event));
+      return OnMouseEvent(event);
     }
-    return ComponentBase::OnEvent(std::move(event));
+    return ComponentBase::OnEvent(event);
   }
 
-  bool OnMouseEvent(Event event) {
+  bool OnMouseEvent(const Event& event) {
     if (captured_mouse_ && event.mouse().motion == Mouse::Released) {
       captured_mouse_.reset();
       return true;

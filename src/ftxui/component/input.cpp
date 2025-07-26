@@ -358,7 +358,7 @@ class InputBase : public ComponentBase, public InputOption {
     return true;
   }
 
-  bool OnEvent(Event event) override {
+  bool OnEvent(const Event& event) override {
     cursor_position() = util::clamp(cursor_position(), 0, (int)content->size());
 
     if (event == Event::Return) {
@@ -455,7 +455,7 @@ class InputBase : public ComponentBase, public InputOption {
     return true;
   }
 
-  bool HandleMouse(Event event) {
+  bool HandleMouse(const Event& event) {
     hovered_ = box_.Contain(event.mouse().x,  //
                             event.mouse().y) &&
                CaptureMouse(event);

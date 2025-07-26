@@ -4,6 +4,7 @@
 #ifndef FTXUI_COMPONENT_EVENT_HPP
 #define FTXUI_COMPONENT_EVENT_HPP
 
+#include <cstdint>                    // for uint8_t
 #include <ftxui/component/mouse.hpp>  // for Mouse
 #include <string>                     // for string, operator==
 
@@ -105,9 +106,10 @@ struct Event {
   const std::string& input() const { return input_; }
 
   bool is_character() const { return type_ == Type::Character; }
-  std::string character() const { return input_; }
+  const std::string& character() const { return input_; }
 
   bool is_mouse() const { return type_ == Type::Mouse; }
+  const struct Mouse& mouse() const { return data_.mouse; }
   struct Mouse& mouse() { return data_.mouse; }
 
   // --- Internal Method section -----------------------------------------------
@@ -127,7 +129,7 @@ struct Event {
  private:
   friend ComponentBase;
   friend ScreenInteractive;
-  enum class Type {
+  enum class Type : uint8_t {
     Unknown,
     Character,
     Mouse,
@@ -137,8 +139,8 @@ struct Event {
   Type type_ = Type::Unknown;
 
   struct Cursor {
-    int x = 0;
-    int y = 0;
+    short x = 0;
+    short y = 0;
   };
 
   union {

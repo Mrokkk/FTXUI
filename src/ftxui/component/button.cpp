@@ -104,7 +104,7 @@ class ButtonBase : public ComponentBase, public ButtonOption {
     on_click();  // May delete this.
   }
 
-  bool OnEvent(Event event) override {
+  bool OnEvent(const Event& event) override {
     if (event.is_mouse()) {
       return OnMouseEvent(event);
     }

@@ -38,7 +38,7 @@ Component Modal(Component main, Component modal, const bool* show_modal) {
       return document;
     }
 
-    bool OnEvent(Event event) override {
+    bool OnEvent(const Event& event) override {
       selector_ = *show_modal_;
       return ComponentBase::OnEvent(event);
     }

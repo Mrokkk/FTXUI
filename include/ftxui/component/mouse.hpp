@@ -3,13 +3,14 @@
 // the LICENSE file.
 #ifndef FTXUI_COMPONENT_MOUSE_HPP
 #define FTXUI_COMPONENT_MOUSE_HPP
+#include <cstdint>
 namespace ftxui {
 
 /// @brief A mouse event. It contains the coordinate of the mouse, the button
 /// pressed and the modifier (shift, ctrl, meta).
 /// @ingroup component
 struct Mouse {
-  enum Button {
+  enum Button : uint8_t {
     Left = 0,
     Middle = 1,
     Right = 2,
@@ -20,7 +21,7 @@ struct Mouse {
     WheelRight = 7,  /// Supported terminal only.
   };
 
-  enum Motion {
+  enum Motion : uint8_t {
     Released = 0,
     Pressed = 1,
     Moved = 2,
@@ -38,8 +39,8 @@ struct Mouse {
   bool control = false;
 
   // Coordinates:
-  int x = 0;
-  int y = 0;
+  short x = 0;
+  short y = 0;
 };
 
 }  // namespace ftxui

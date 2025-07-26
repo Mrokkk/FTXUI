@@ -90,7 +90,7 @@ Component Renderer(std::function<Element(bool)> render) {
    private:
     Element OnRender() override { return render_(Focused()) | reflect(box_); }
     bool Focusable() const override { return true; }
-    bool OnEvent(Event event) override {
+    bool OnEvent(const Event& event) override {
       if (event.is_mouse() && box_.Contain(event.mouse().x, event.mouse().y)) {
         if (!CaptureMouse(event)) {
           return false;
