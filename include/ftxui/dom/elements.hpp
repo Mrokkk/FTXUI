@@ -133,6 +133,7 @@ Decorator selectionStyle(std::function<void(Pixel&)> style);
 // Horizontal, Vertical or stacked set of elements.
 Element hbox(Elements);
 Element vbox(Elements);
+Element nonSelectableVbox(Elements);
 Element dbox(Elements);
 Element flexbox(Elements, FlexboxConfig config = FlexboxConfig());
 Element gridbox(std::vector<Elements> lines);

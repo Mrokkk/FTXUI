@@ -78,6 +78,15 @@ class VBox : public Node {
     }
   }
 };
+
+class NonSelectableVBox : public VBox {
+ public:
+  explicit NonSelectableVBox(Elements children) : VBox(std::move(children)) {}
+
+ private:
+  void Select(Selection& selection) override {}
+};
+
 }  // namespace
 
 /// @brief A container displaying elements vertically one by one.
@@ -95,6 +104,11 @@ class VBox : public Node {
 /// ```
 Element vbox(Elements children) {
   return std::make_shared<VBox>(std::move(children));
+}
+
+Element nonSelectableVbox(Elements children)
+{
+  return std::make_shared<NonSelectableVBox>(std::move(children));
 }
 
 }  // namespace ftxui
