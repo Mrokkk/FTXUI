@@ -83,7 +83,7 @@ Event Event::CursorPosition(std::string input, int x, int y) {
   Event event;
   event.input_ = std::move(input);
   event.type_ = Type::CursorPosition;
-  event.data_.cursor = {x, y};  // NOLINT
+  event.data_.cursor = {static_cast<short>(x), static_cast<short>(y)};  // NOLINT
   return event;
 }
 
